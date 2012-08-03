@@ -41,7 +41,7 @@
             this.nudFlush = new System.Windows.Forms.NumericUpDown();
             this.cbVerbose = new System.Windows.Forms.CheckBox();
             this.txtLogPath = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtGateway = new System.Windows.Forms.TextBox();
             this.gbLog.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudFlush)).BeginInit();
             this.SuspendLayout();
@@ -168,14 +168,14 @@
             this.txtLogPath.TabIndex = 4;
             this.txtLogPath.Text = global::ConnectionMonitor.Properties.Settings.Default.LogPath;
             // 
-            // textBox1
+            // txtGateway
             // 
-            this.textBox1.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::ConnectionMonitor.Properties.Settings.Default, "DefaultGatewayIP", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.textBox1.Location = new System.Drawing.Point(15, 25);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(162, 20);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.Text = global::ConnectionMonitor.Properties.Settings.Default.DefaultGatewayIP;
+            this.txtGateway.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::ConnectionMonitor.Properties.Settings.Default, "DefaultGatewayIP", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtGateway.Location = new System.Drawing.Point(15, 25);
+            this.txtGateway.Name = "txtGateway";
+            this.txtGateway.Size = new System.Drawing.Size(162, 20);
+            this.txtGateway.TabIndex = 3;
+            this.txtGateway.Text = global::ConnectionMonitor.Properties.Settings.Default.DefaultGatewayIP;
             // 
             // Main
             // 
@@ -188,7 +188,7 @@
             this.Controls.Add(this.btnStartLogging);
             this.Controls.Add(this.btnLogPath);
             this.Controls.Add(this.txtLogPath);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtGateway);
             this.Controls.Add(this.gbLog);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -212,7 +212,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox gbLog;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtGateway;
         private System.Windows.Forms.TextBox txtHistory;
         private System.Windows.Forms.TextBox txtLogPath;
         private System.Windows.Forms.Button btnLogPath;

@@ -22,7 +22,7 @@ namespace ConnectionMonitor
         private static bool verbose;
         private static string logpath;
 
-        System.Threading.Thread bt = new System.Threading.Thread(BackgroundFlush);
+        System.Threading.Thread bt;
         
         private enum ConnectionStatus : int
         {
@@ -61,12 +61,13 @@ namespace ConnectionMonitor
                 this.btnStartLogging.Visible = false;
                 this.btnStopLogging.Visible = true;
 
-                this.txtHistory.ReadOnly = true;
-                this.nudFlush.ReadOnly = true;
+                this.txtGateway.ReadOnly = true;
+                this.btnLogPath.Enabled = false;
+                this.nudFlush.Enabled = false;
 
+                bt = new System.Threading.Thread(BackgroundFlush);
                 bt.IsBackground = true;
                 bt.Start();
-
             }
         }
 
@@ -121,8 +122,9 @@ namespace ConnectionMonitor
             this.btnStopLogging.Visible = false;
             this.btnStartLogging.Visible = true;
 
-            this.txtHistory.ReadOnly = false;
-            this.nudFlush.ReadOnly = false;
+            this.txtGateway.ReadOnly = false;
+            this.btnLogPath.Enabled = true;
+            this.nudFlush.Enabled = true;
         }
 
         private void btnLogPath_Click(object sender, EventArgs e)
@@ -158,16 +160,15 @@ namespace ConnectionMonitor
 
             while (!worker.CancellationPending)
             {
-                StringBuilder sbHistory = new StringBuilder();
-                StringBuilder sbLog = new StringBuilder();
-                ProgressData pd = new ProgressData();
-                string saddress = "76.185.224.1";
+                StringBuilder history = new StringBuilder();
+                StringBuilder log = new StringBuilder();
+                ProgressData pd = new ProgressData() { History = string.Empty, Log = string.Empty };
 
                 Ping pingSender = new Ping();
 
                 try
                 {
-                    IPAddress address = IPAddress.Parse(saddress);
+                    IPAddress address = IPAddress.Parse(Properties.Settings.Default.DefaultGatewayIP);
                     PingReply reply = pingSender.Send(address, 5000);
 
                     count++;
@@ -177,8 +178,8 @@ namespace ConnectionMonitor
                     {
                         if (firstrun)
                         {
-                            sbHistory.AppendLine("Connection Status: Up");
-                            sbLog.AppendLine("Connection Status: Up");
+                            history.AppendLine("Connection Status: Up");
+                            log.AppendLine("Connection Status: Up");
                             firstrun = false;
                         }
 
@@ -188,13 +189,13 @@ namespace ConnectionMonitor
                             var span = downtimeend - downtimestart;
 
                             string status = string.Format("Connection Up: {0}    Downtime: {1} hours - {2} minutes - {3} seconds", DateTime.Now, span.Hours, span.Minutes, span.Seconds);
-                            sbLog.AppendLine(status);
-                            sbHistory.AppendLine(status);
+                            log.AppendLine(status);
+                            history.AppendLine(status);
                         }
 
                         laststatus = ConnectionStatus.Up;
 
-                        if (verbose) { sbHistory.AppendLine(string.Format("Time: {0}     Address: {1}     Status: {2}     RoundTrip: {3} ms     Average: {4} ms", DateTime.Now, saddress, reply.Status, reply.RoundtripTime, total / count)); }
+                        if (verbose) { history.AppendLine(string.Format("Time: {0}     Address: {1}     Status: {2}     RoundTrip: {3} ms     Average: {4} ms", DateTime.Now, address.ToString(), reply.Status, reply.RoundtripTime, total / count)); }
                     }
                     else
                     {
@@ -207,39 +208,39 @@ namespace ConnectionMonitor
                             downtimestart = DateTime.Now;
 
                             string status = string.Format("Connection Down: {0}", DateTime.Now);
-                            sbLog.AppendLine(status);
-                            sbHistory.AppendLine(status);
+                            log.AppendLine(status);
+                            history.AppendLine(status);
                         }
 
                         laststatus = ConnectionStatus.Down;
 
-                        if (verbose) { sbHistory.AppendLine(string.Format("Time: {0}     Address: {1}     Status: {2}     RoundTrip: {3} ms", DateTime.Now, saddress, reply.Status, reply.RoundtripTime)); }
+                        if (verbose) { history.AppendLine(string.Format("Time: {0}     Address: {1}     Status: {2}     RoundTrip: {3} ms", DateTime.Now, address.ToString(), reply.Status, reply.RoundtripTime)); }
                     }
                 }
                 catch (PingException pe)
                 {
-                    sbHistory.AppendLine(pe.Message);
+                    history.AppendLine(pe.Message);
                 }
                 catch (NetworkInformationException net)
                 {
-                    sbHistory.AppendLine(net.Message);
+                    history.AppendLine(net.Message);
                 }
                 catch (Exception ex)
                 {
-                    sbHistory.AppendLine(ex.Message);
+                    history.AppendLine(ex.Message);
                 }
                 finally
                 {
                     pingSender.Dispose();
                 }
 
-                if (sbHistory.Length > 0) { pd.History = sbHistory.ToString(); }
-                if (sbLog.Length > 0) { pd.Log = sbLog.ToString(); }
+                if (history.Length > 0) { pd.History = history.ToString(); }
+                if (log.Length > 0) { pd.Log = log.ToString(); }
 
                 worker.ReportProgress(0, pd);
 
-                sbHistory = null;
-                sbLog = null;
+                history = null;
+                log = null;
 
                 System.Threading.Thread.Sleep(3000);
             }
