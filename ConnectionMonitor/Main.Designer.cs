@@ -37,10 +37,13 @@
             this.fbdLogPath = new System.Windows.Forms.FolderBrowserDialog();
             this.btnStartLogging = new System.Windows.Forms.Button();
             this.btnStopLogging = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nudFlush = new System.Windows.Forms.NumericUpDown();
             this.cbVerbose = new System.Windows.Forms.CheckBox();
             this.txtLogPath = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.gbLog.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudFlush)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -95,7 +98,8 @@
             // 
             // fbdLogPath
             // 
-            this.fbdLogPath.RootFolder = System.Environment.SpecialFolder.MyDocuments;
+            this.fbdLogPath.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            this.fbdLogPath.SelectedPath = global::ConnectionMonitor.Properties.Settings.Default.LogPath;
             // 
             // btnStartLogging
             // 
@@ -118,6 +122,29 @@
             this.btnStopLogging.Visible = false;
             this.btnStopLogging.Click += new System.EventHandler(this.btnStopLogging_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(63, 69);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(57, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Flush (min)";
+            // 
+            // nudFlush
+            // 
+            this.nudFlush.DataBindings.Add(new System.Windows.Forms.Binding("Value", global::ConnectionMonitor.Properties.Settings.Default, "FlushMin", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.nudFlush.Location = new System.Drawing.Point(15, 64);
+            this.nudFlush.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudFlush.Name = "nudFlush";
+            this.nudFlush.Size = new System.Drawing.Size(42, 20);
+            this.nudFlush.TabIndex = 9;
+            this.nudFlush.Value = global::ConnectionMonitor.Properties.Settings.Default.FlushMin;
+            // 
             // cbVerbose
             // 
             this.cbVerbose.AutoSize = true;
@@ -125,9 +152,9 @@
             this.cbVerbose.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::ConnectionMonitor.Properties.Settings.Default, "Verbose", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.cbVerbose.Location = new System.Drawing.Point(249, 68);
             this.cbVerbose.Name = "cbVerbose";
-            this.cbVerbose.Size = new System.Drawing.Size(65, 17);
+            this.cbVerbose.Size = new System.Drawing.Size(100, 17);
             this.cbVerbose.TabIndex = 8;
-            this.cbVerbose.Text = "Verbose";
+            this.cbVerbose.Text = "Verbose Output";
             this.cbVerbose.UseVisualStyleBackColor = true;
             this.cbVerbose.CheckedChanged += new System.EventHandler(this.cbVerbose_CheckedChanged);
             // 
@@ -155,6 +182,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(593, 376);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.nudFlush);
             this.Controls.Add(this.cbVerbose);
             this.Controls.Add(this.btnStartLogging);
             this.Controls.Add(this.btnLogPath);
@@ -172,6 +201,7 @@
             this.Text = "Connection Monitor";
             this.gbLog.ResumeLayout(false);
             this.gbLog.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudFlush)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -190,6 +220,8 @@
         private System.Windows.Forms.Button btnStartLogging;
         private System.Windows.Forms.Button btnStopLogging;
         private System.Windows.Forms.CheckBox cbVerbose;
+        private System.Windows.Forms.NumericUpDown nudFlush;
+        private System.Windows.Forms.Label label3;
     }
 }
 

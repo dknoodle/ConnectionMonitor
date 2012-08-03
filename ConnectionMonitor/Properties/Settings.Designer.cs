@@ -25,7 +25,7 @@ namespace ConnectionMonitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("76.185.224.1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DefaultGatewayIP {
             get {
                 return ((string)(this["DefaultGatewayIP"]));
@@ -37,7 +37,7 @@ namespace ConnectionMonitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("c:\\temp")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string LogPath {
             get {
                 return ((string)(this["LogPath"]));
@@ -56,6 +56,18 @@ namespace ConnectionMonitor.Properties {
             }
             set {
                 this["Verbose"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public decimal FlushMin {
+            get {
+                return ((decimal)(this["FlushMin"]));
+            }
+            set {
+                this["FlushMin"] = value;
             }
         }
     }

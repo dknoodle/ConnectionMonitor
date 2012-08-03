@@ -3,13 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="DefaultGatewayIP" Type="System.String" Scope="User">
-      <Value Profile="(Default)">76.185.224.1</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="LogPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">c:\temp</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Verbose" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FlushMin" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">5</Value>
     </Setting>
   </Settings>
 </SettingsFile>

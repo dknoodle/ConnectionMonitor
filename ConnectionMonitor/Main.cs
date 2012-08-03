@@ -46,19 +46,71 @@ namespace ConnectionMonitor
 
         private void btnStartLogging_Click(object sender, EventArgs e)
         {
-            logpath = this.txtLogPath.Text;
-            string log = string.Format("Logging Started: {0}\n", DateTime.Now);
+            Properties.Settings.Default.Save();
 
-            this.txtHistory.Text = log;
-            logdata.AppendLine(log);
+            if (RunReady())
+            {
+                logpath = Properties.Settings.Default.LogPath;
+                string log = string.Format("Logging Started: {0}\n", DateTime.Now);
 
-            bw.RunWorkerAsync();
+                this.txtHistory.Text = log;
+                logdata.AppendLine(log);
 
-            this.btnStartLogging.Visible = false;
-            this.btnStopLogging.Visible = true;
-            
-            bt.IsBackground = true;
-            bt.Start();
+                bw.RunWorkerAsync();
+
+                this.btnStartLogging.Visible = false;
+                this.btnStopLogging.Visible = true;
+
+                this.txtHistory.ReadOnly = true;
+                this.nudFlush.ReadOnly = true;
+
+                bt.IsBackground = true;
+                bt.Start();
+
+            }
+        }
+
+        private bool RunReady()
+        {
+            if (string.IsNullOrWhiteSpace(Properties.Settings.Default.DefaultGatewayIP))
+            {
+                MessageBox.Show("The Gateway IP to ping is required.  Please set the IP address and try again.");
+                return false;
+            }
+            else
+            {
+                try
+                {
+                    IPAddress address = IPAddress.Parse(Properties.Settings.Default.DefaultGatewayIP);
+                }
+                catch
+                {
+                    MessageBox.Show("The IP address entered is invalid.  Please enter a valid IP address in the format xxx.xxx.xxx.xxx and try again.");
+                    return false;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(Properties.Settings.Default.LogPath))
+            {
+                MessageBox.Show("Please select a log path to ouput log information and try again.");
+                return false;
+            }
+            else
+            {
+                try
+                {
+                    //Check to see if the log path exists and create it if needed.
+                    if (!Directory.Exists(Properties.Settings.Default.LogPath)) { Directory.CreateDirectory(Properties.Settings.Default.LogPath); }
+                }
+                catch
+                {
+                    MessageBox.Show("The log path you entered is invalid.  Please select a valid directory path and try again.");
+                    return false;
+                }
+            }
+
+
+            return true;
         }
 
         private void btnStopLogging_Click(object sender, EventArgs e)
@@ -68,6 +120,9 @@ namespace ConnectionMonitor
 
             this.btnStopLogging.Visible = false;
             this.btnStartLogging.Visible = true;
+
+            this.txtHistory.ReadOnly = false;
+            this.nudFlush.ReadOnly = false;
         }
 
         private void btnLogPath_Click(object sender, EventArgs e)
@@ -93,6 +148,13 @@ namespace ConnectionMonitor
 
             int count = 0;
             long total = 0;
+
+            // Only keep the last 50 pings in the avg
+            if (count >= 50)
+            {
+                total = total / count;
+                count = 1;
+            }
 
             while (!worker.CancellationPending)
             {
@@ -171,10 +233,14 @@ namespace ConnectionMonitor
                     pingSender.Dispose();
                 }
 
-                pd.History = sbHistory.ToString();
-                pd.Log = sbLog.ToString();
+                if (sbHistory.Length > 0) { pd.History = sbHistory.ToString(); }
+                if (sbLog.Length > 0) { pd.Log = sbLog.ToString(); }
 
                 worker.ReportProgress(0, pd);
+
+                sbHistory = null;
+                sbLog = null;
+
                 System.Threading.Thread.Sleep(3000);
             }
         }
@@ -201,7 +267,8 @@ namespace ConnectionMonitor
         {
             while (true)
             {
-                System.Threading.Thread.Sleep(600000);
+                int count = Convert.ToInt32(Properties.Settings.Default.FlushMin * 60000);
+                System.Threading.Thread.Sleep(count);
                 FlushLog();
             }
         }
@@ -220,7 +287,7 @@ namespace ConnectionMonitor
                         using (StreamWriter sw = File.CreateText(path))
                         {
                             sw.Write(logdata.ToString());
-                            logdata.Clear();
+                            logdata = new StringBuilder();
                         }
                     }
                     else
@@ -229,7 +296,7 @@ namespace ConnectionMonitor
                         using (StreamWriter sw = File.AppendText(path))
                         {
                             sw.Write(logdata.ToString());
-                            logdata.Clear();
+                            logdata = new StringBuilder();
                         }
                     }
                 }
@@ -245,6 +312,7 @@ namespace ConnectionMonitor
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             FlushLog();
+            Properties.Settings.Default.Save();
             base.OnFormClosing(e);
         }
     }
